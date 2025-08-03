@@ -46,9 +46,10 @@ variables:
 # Build job - compile only what's needed for TDD tests
 build:tdd_tests:
   stage: build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+  only:
+    - merge_requests
+    - develop
+    - master
   before_script:
     - *setup_dependencies
   script:
@@ -70,9 +71,10 @@ build:tdd_tests:
 # TDD Test job - run all TDD tests
 test:tdd:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+  only:
+    - merge_requests
+    - develop
+    - master
   needs: ["build:tdd_tests"]
   before_script:
     - apt-get update -qq
@@ -94,9 +96,10 @@ test:tdd:
 # Unit test job - run individual test categories
 test:daemon_jsonrpc:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+  only:
+    - merge_requests
+    - develop
+    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon JSON-RPC Tests..."
@@ -106,9 +109,10 @@ test:daemon_jsonrpc:
 
 test:daemon_integration:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+  only:
+    - merge_requests
+    - develop
+    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon Integration Tests..."
@@ -119,9 +123,10 @@ test:daemon_integration:
 
 test:example_voxel:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+  only:
+    - merge_requests
+    - develop
+    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Example Voxel Tests..."
@@ -171,15 +176,17 @@ test:coverage:
   allow_failure: true
   when: manual
 
-# MR Quality Gate - must pass for merge approval
-test:mr_quality_gate:
+# Quick sanity check - runs on merge requests only
+test:quick:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  needs: ["test:daemon_jsonrpc", "test:example_voxel", "test:tdd"]
+  only:
+    - merge_requests
+  before_script:
+    - *setup_dependencies
   script:
-    - echo "✅ All critical TDD tests passed!"
-    - echo "📋 MR Quality Gate: PASSED"
-    - echo "🔍 Integration tests: Known 4 failures (connection reuse limitation)"
-    - echo "✅ Ready for merge approval"
-  allow_failure: false
+    - echo "⚡ Quick TDD sanity check..."
+    - cd tests/tdd
+    - make clean
+    - make example_voxel_tdd
+    - ./example_voxel_tdd
+    - echo "✅ Quick test passed!"
