@@ -46,10 +46,6 @@ variables:
 # Build job - compile only what's needed for TDD tests
 build:tdd_tests:
   stage: build
-  only:
-    - merge_requests
-    - develop
-    - master
   before_script:
     - *setup_dependencies
   script:
@@ -71,10 +67,6 @@ build:tdd_tests:
 # TDD Test job - run all TDD tests
 test:tdd:
   stage: test
-  only:
-    - merge_requests
-    - develop
-    - master
   needs: ["build:tdd_tests"]
   before_script:
     - apt-get update -qq
@@ -96,10 +88,6 @@ test:tdd:
 # Unit test job - run individual test categories
 test:daemon_jsonrpc:
   stage: test
-  only:
-    - merge_requests
-    - develop
-    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon JSON-RPC Tests..."
@@ -109,10 +97,6 @@ test:daemon_jsonrpc:
 
 test:daemon_integration:
   stage: test
-  only:
-    - merge_requests
-    - develop
-    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon Integration Tests..."
@@ -123,10 +107,6 @@ test:daemon_integration:
 
 test:example_voxel:
   stage: test
-  only:
-    - merge_requests
-    - develop
-    - master
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Example Voxel Tests..."
@@ -176,11 +156,9 @@ test:coverage:
   allow_failure: true
   when: manual
 
-# Quick sanity check - runs on merge requests only
+# Quick sanity check - runs on all branches
 test:quick:
   stage: test
-  only:
-    - merge_requests
   before_script:
     - *setup_dependencies
   script:
