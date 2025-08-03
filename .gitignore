@@ -1,16 +1,191 @@
+# ====================================
+# Goxel .gitignore
+# ====================================
+
+# -------------------------------------
+# Build Artifacts & Object Files
+# -------------------------------------
 *.o
-*.swp
-*~
+*.os
 *.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
 .sconsign.dblite
 /.sconf_temp
-/goxel
-/imgui.ini
 /config.log
+
+# -------------------------------------
+# Goxel Executables
+# -------------------------------------
+/goxel
+/goxel-cli
+/goxel-headless
+/goxel-daemon
+
+# -------------------------------------
+# Build Directories
+# -------------------------------------
+/build/
+/dist/
+/out/
+/release/
+/debug/
+/examples/*/build/
+/.cache/
+
+# -------------------------------------
+# Test Artifacts
+# -------------------------------------
+# Test executables
+test_*
+!test_*.c
+!test_*.h
+tests/test_cli_execution*
+tests/test_*_report
+tests/socket_server_demo
+tests/test_daemon_lifecycle
+tests/test_json_rpc
+tests/test_json_rpc_methods
+tests/test_socket_server
+tests/minimal_test
+tests/serialize_test
+tests/single_test
+tests/platforms/*/test_*
+
+# Performance test binaries
+tests/performance/cli_baseline
+tests/performance/comparison_framework
+tests/performance/concurrency_test
+tests/performance/latency_benchmark
+tests/performance/memory_profiling
+tests/performance/stress_test
+tests/performance/throughput_test
+
+# Test output files
+*.gox
+debug_test*
+debug_voxel*
+test_*.ply
+test_*.vox
+test_*.png
+render_output.*
+results/
+coverage/
+*.lcov
+.nyc_output/
+
+# -------------------------------------
+# IDE & Editor Files
+# -------------------------------------
+# Vim
+*.swp
+*.swo
+*~
+.vimrc
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-*
+
+# Emacs
+\#*\#
+.\#*
+TAGS
+
+# ctags
+tags
+
+# -------------------------------------
+# Node.js & TypeScript
+# -------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.yarn/
+.pnp.*
+
+# -------------------------------------
+# OS-Specific Files
+# -------------------------------------
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
 xcuserdata/
+*.dSYM/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# -------------------------------------
+# Logs & Temporary Files
+# -------------------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*.pid
+*.seed
+*.lock
+
+# -------------------------------------
+# Documentation Generated Files
+# -------------------------------------
+/docs/_build/
+/docs/generated/
+/doxygen/
+
+# -------------------------------------
+# Python (for build scripts)
+# -------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.env
+
+# -------------------------------------
+# Miscellaneous
+# -------------------------------------
+/imgui.ini
 /todo
-/.vimrc
 /compile_commands.json
-/TAGS
-/.cache
+estimate_performance.py
+quick_perf_test.py
+
+# -------------------------------------
+# Daemon-specific
+# -------------------------------------
+/tmp/goxel.sock
+/var/run/goxel-daemon.pid
+*.sock
