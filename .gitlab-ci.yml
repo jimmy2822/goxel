@@ -112,7 +112,7 @@ test:daemon_integration:
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon Integration Tests..."
-    - echo "⚠️  Note: 4 tests expected to fail due to connection reuse limitation"
+    - echo "WARNING - 4 tests expected to fail due to connection reuse limitation"
     - cd tests/tdd
     - ./test_daemon_integration_tdd
   allow_failure: true  # Allow failure due to 4 known failing tests
