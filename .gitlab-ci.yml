@@ -48,7 +48,7 @@ build:tdd_tests:
   stage: build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+    - if: $CI_COMMIT_BRANCH
   before_script:
     - *setup_dependencies
   script:
@@ -72,7 +72,7 @@ test:tdd:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+    - if: $CI_COMMIT_BRANCH
   needs: ["build:tdd_tests"]
   before_script:
     - apt-get update -qq
@@ -96,7 +96,7 @@ test:daemon_jsonrpc:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+    - if: $CI_COMMIT_BRANCH
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon JSON-RPC Tests..."
@@ -108,7 +108,7 @@ test:daemon_integration:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+    - if: $CI_COMMIT_BRANCH
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Daemon Integration Tests..."
@@ -121,7 +121,7 @@ test:example_voxel:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+    - if: $CI_COMMIT_BRANCH
   needs: ["build:tdd_tests"]
   script:
     - echo "🧪 Running Example Voxel Tests..."
