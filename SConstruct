@@ -279,9 +279,28 @@ if env['daemon'] and target_os == 'darwin':
 # Linux compilation support.
 if target_os == 'posix':
     if env['daemon']:
-        # Daemon mode uses OSMesa for offscreen rendering
-        env.Append(LIBS=['OSMesa', 'm', 'dl', 'pthread'])
-        env.Append(CPPDEFINES=['OSMESA_RENDERING=1'])
+        # Daemon mode uses OSMesa for offscreen rendering if available
+        osmesa_found = False
+        
+        # Try to find OSMesa via pkg-config
+        if conf.TryAction('pkg-config --exists osmesa')[0]:
+            env.ParseConfig('pkg-config --cflags --libs osmesa')
+            env.Append(CPPDEFINES=['OSMESA_RENDERING', 'HAVE_OSMESA'])
+            osmesa_found = True
+            print("Found OSMesa via pkg-config")
+        else:
+            # Check if OSMesa library exists in standard locations
+            if conf.CheckLib('OSMesa'):
+                env.Append(LIBS=['OSMesa'])
+                env.Append(CPPDEFINES=['OSMESA_RENDERING', 'HAVE_OSMESA'])
+                osmesa_found = True
+                print("Found OSMesa library")
+        
+        if not osmesa_found:
+            print("WARNING: OSMesa not found - daemon rendering will use software fallback")
+            env.Append(CPPDEFINES=['OSMESA_RENDERING=1', 'DAEMON_SOFTWARE_FALLBACK'])
+        
+        env.Append(LIBS=['m', 'dl', 'pthread'])
     else:
         # GUI mode uses regular OpenGL
         env.Append(LIBS=['GL', 'm', 'dl', 'pthread'])
