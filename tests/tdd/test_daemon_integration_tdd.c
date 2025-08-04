@@ -111,7 +111,12 @@ int test_daemon_creates_socket() {
     TEST_ASSERT(daemon_pid > 0, "Daemon should start successfully");
     
     // Give daemon time to create socket
-    usleep(100000); // 100ms
+    // In CI with virtual display, daemon might need more time to start
+    int attempts = 0;
+    while (!socket_exists() && attempts < 20) {
+        usleep(100000); // 100ms
+        attempts++;
+    }
     
     TEST_ASSERT(socket_exists(), "Socket should exist after daemon starts");
     
