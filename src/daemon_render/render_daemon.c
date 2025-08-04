@@ -345,7 +345,6 @@ int daemon_render_scene_with_camera(const image_t *image, const camera_t *camera
         
         // Simple voxel rendering: iterate through all visible layers and voxels
         const layer_t *layer;
-        int voxel_count = 0;
         
         for (layer = goxel_get_render_layers(true); layer; layer = layer->next) {
             if (!layer->visible || !layer->volume) continue;
@@ -362,7 +361,6 @@ int daemon_render_scene_with_camera(const image_t *image, const camera_t *camera
                         uint8_t voxel[4];
                         volume_get_at(layer->volume, NULL, pos, voxel);
                         if (voxel[3] > 0) {
-                            voxel_count++;
                             
                             // Simple orthogonal projection: X->screen_x, Z->screen_y (top-down view)
                             // Center the projection and add some offset
