@@ -1,10 +1,10 @@
-# CLAUDE.md - Goxel-Daemon v15.0 JSON-RPC Server
+# CLAUDE.md - Goxel-Daemon v15.1 JSON-RPC Server
 
 ## Project Overview
 
 Goxel-daemon is a Unix socket JSON-RPC server for the Goxel voxel editor, enabling programmatic control and automation. Written in C99.
 
-**⚠️ v15.0.1 Status: BETA - Export/Render Functions Fixed**
+**✅ v15.1 Status: STABLE - OSMesa Rendering Fully Working**
 - **JSON-RPC**: ✅ All 15 methods implemented and functional
 - **TDD Tests**: ✅ 271 total tests (267 passing, 4 integration test failures)
 - **GitLab CI**: ✅ Automated TDD testing on every push
@@ -13,9 +13,14 @@ Goxel-daemon is a Unix socket JSON-RPC server for the Goxel voxel editor, enabli
 - **Connection Reuse**: ⚠️ Not supported - one request per connection
 - **Workaround**: ✅ Create new connection for each request (standard usage)
 - **Export Formats**: ⚠️ Only .gox format supported in daemon mode (both save_project and export_model)
-- **Rendering**: ✅ Fixed in PR #6 - now produces correct images with OSMesa
+- **OSMesa Rendering**: ✅ **FULLY WORKING** - Complete offscreen rendering with Mesa 23.3.6
+- **Rendering Quality**: ✅ Produces actual voxel images (no more gray output)
 
-**Recent Fixes (v15.0.1):**
+**Recent Fixes (v15.1):**
+- **MAJOR**: Successfully installed and configured OSMesa from source (Mesa 23.3.6)
+- **MAJOR**: Fixed OSMesa detection in SConstruct build system 
+- **MAJOR**: Resolved GL header compatibility issues (GLAPI/GLAPIENTRY macros)
+- **MAJOR**: Verified working render pipeline producing actual PNG images
 - Fixed TDD test method names (save_file → save_project, export_file → export_model) in PR #5
 - Fixed daemon render functionality to produce actual images instead of gray output in PR #6
 - Added real file operation integration tests that verify actual functionality
@@ -74,6 +79,81 @@ sudo apt-get install scons pkg-config libglfw3-dev libgtk-3-dev libpng-dev
 # Build
 scons daemon=1
 ```
+
+### OSMesa Setup for Rendering (Required for Headless Rendering)
+
+**✅ Status: Fully Working with Mesa 23.3.6**
+
+For proper headless rendering capabilities, install OSMesa:
+
+#### Method 1: Automated Installation (Recommended)
+```bash
+# Use the provided installation script
+chmod +x scripts/install_osmesa.sh
+./scripts/install_osmesa.sh
+
+# Verify installation
+PKG_CONFIG_PATH="/opt/homebrew/opt/osmesa/lib/pkgconfig:$PKG_CONFIG_PATH" pkg-config --exists osmesa && echo "OSMesa found"
+```
+
+#### Method 2: Manual Installation
+```bash
+# Install dependencies
+brew install meson ninja python@3.13 llvm
+pip3 install mako
+
+# Download and build Mesa 23.3.6
+mkdir -p /tmp/osmesa_build && cd /tmp/osmesa_build
+curl -L -O https://archive.mesa3d.org/mesa-23.3.6.tar.xz
+tar -xf mesa-23.3.6.tar.xz && cd mesa-23.3.6
+
+# Configure build
+meson setup build \
+    --prefix="/opt/homebrew/opt/osmesa" \
+    -Dgallium-drivers=swrast \
+    -Dvulkan-drivers= \
+    -Dosmesa=true \
+    -Degl=disabled \
+    -Dgles1=disabled \
+    -Dgles2=disabled \
+    -Dglx=disabled \
+    -Dplatforms= \
+    -Dshared-glapi=enabled \
+    -Dgbm=disabled \
+    -Dzlib=enabled
+
+# Build and install
+meson compile -C build
+sudo meson install -C build
+```
+
+#### Build with OSMesa Support
+```bash
+# Use the provided build script (recommended)
+./build_with_osmesa.sh
+
+# Or manually with environment variables
+PKG_CONFIG_PATH="/opt/homebrew/opt/osmesa/lib/pkgconfig:$PKG_CONFIG_PATH" scons daemon=1 headless=1
+```
+
+#### Verify OSMesa Rendering
+```bash
+# Start daemon
+./goxel-daemon --foreground --socket /tmp/test.sock &
+
+# Test rendering (Python script available)
+python3 test_osmesa_render.py
+
+# Check output
+ls -la /tmp/test_osmesa_render.png
+```
+
+**OSMesa Configuration Details:**
+- **Version**: Mesa 23.3.6 with OSMesa support
+- **Renderer**: softpipe (software rendering)
+- **Install Path**: `/opt/homebrew/opt/osmesa`
+- **Compatibility**: OpenGL 3.3 Compatibility Profile
+- **Output Format**: PNG images with proper voxel rendering (no gray fallback)
 
 ## JSON-RPC API
 
@@ -154,7 +234,7 @@ In daemon mode, export functionality is limited:
 
 1. **save_project**: Only supports .gox format (native Goxel format)
 2. **export_model**: Only supports .gox format in daemon mode (other formats return error)
-3. **Rendering**: Works correctly with OSMesa dependency (fixed in v15.0.1)
+3. **Rendering**: ✅ **FULLY WORKING** with OSMesa Mesa 23.3.6 (resolved in v15.1)
 
 ### Test Coverage Issues
 - **Method Names**: TDD tests previously used wrong method names (fixed in v15.0.1)
@@ -162,11 +242,42 @@ In daemon mode, export functionality is limited:
 - **Integration Tests**: Real file operation tests in `tests/test_daemon_file_operations.c`
 - **Connection Reuse**: 4 integration tests expect connection reuse which daemon doesn't support
 
+### OSMesa Troubleshooting (v15.1 Solutions)
+
+**Common Issues and Solutions:**
+
+1. **OSMesa not found during build**:
+   ```bash
+   # Problem: "WARNING: OSMesa not found - daemon rendering will use software fallback"
+   # Solution: Ensure PKG_CONFIG_PATH is set correctly
+   export PKG_CONFIG_PATH="/opt/homebrew/opt/osmesa/lib/pkgconfig:$PKG_CONFIG_PATH"
+   ```
+
+2. **GL header compilation errors**:
+   ```
+   # Problem: "unknown type name 'GLAPI'" errors
+   # Solution: Fixed in src/daemon_render/render_daemon.h with proper macro definitions
+   ```
+
+3. **Mesa version compatibility**:
+   ```bash
+   # Verified working: Mesa 23.3.6 with OSMesa
+   # Configuration: softpipe renderer, OpenGL 3.3 Compatibility Profile
+   ```
+
+4. **Rendering output validation**:
+   ```bash
+   # Test rendering functionality
+   python3 test_osmesa_render.py
+   # Expected: PNG file ~1941 bytes with actual voxel content (not gray)
+   ```
+
 ### Documentation
 - Architecture improvements: `docs/daemon-architecture-improvements.md`
 - Current status report: `docs/v15-daemon-status.md`
 - Root cause analysis: `docs/daemon-abort-trap-fix.md`
 - Memory architecture: `docs/daemon-memory-architecture-analysis.md`
+- OSMesa installation: `scripts/install_osmesa.sh`
 
 ## Development
 
@@ -311,9 +422,9 @@ glab ci view <PIPELINE_ID> --web
 
 ---
 
-**Version**: 15.0.1  
-**Updated**: January 2025  
-**Status**: Beta - Core Functionality Working
+**Version**: 15.1  
+**Updated**: August 2025  
+**Status**: Stable - OSMesa Rendering Fully Functional
 
 ## Development Philosophy
 
