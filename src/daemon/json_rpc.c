@@ -2033,11 +2033,11 @@ static json_rpc_response_t *handle_goxel_render_scene(const json_rpc_request_t *
                                              NULL, &request->id);
     }
     
-    // Parameters: width, height, format (optional), output_path (optional)
-    int width = get_int_param(&request->params, 0, "width");
-    int height = get_int_param(&request->params, 1, "height");
-    const char *format = get_string_param(&request->params, 2, "format");
-    const char *output_path = get_string_param(&request->params, 3, "output_path");
+    // Parameters: output_path, width, height (matching API documentation)
+    const char *output_path = get_string_param(&request->params, 0, "output_path");
+    int width = get_int_param(&request->params, 1, "width");
+    int height = get_int_param(&request->params, 2, "height");
+    const char *format = "png"; // Default format
     
     if (width <= 0) width = 512;
     if (height <= 0) height = 512;
