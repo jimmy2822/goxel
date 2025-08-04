@@ -70,8 +70,17 @@ test:tdd:
   needs: ["build:tdd_tests"]
   before_script:
     - apt-get update -qq
-    - apt-get install -y -qq bc libasan6 libubsan1 libgl1-mesa-glx libgtk-3-0
+    # Install all runtime libraries needed by the daemon
+    - apt-get install -y -qq bc libasan6 libubsan1 
+      libgl1-mesa-glx libgtk-3-0 libglfw3 libglew2.2
+      libglib2.0-0 libcairo2 libpango-1.0-0
+      xvfb  # Virtual display for headless GUI
+    # Start virtual display
+    - export DISPLAY=:99
+    - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    - sleep 3  # Give xvfb time to start
   script:
+    - export DISPLAY=:99  # Ensure display is set
     - echo "🧪 Running TDD Test Suite..."
     - cd tests/tdd
     - chmod +x generate_junit_report.sh
@@ -100,8 +109,17 @@ test:daemon_integration:
   needs: ["build:tdd_tests"]
   before_script:
     - apt-get update -qq
-    - apt-get install -y -qq libasan6 libubsan1 libgl1-mesa-glx libgtk-3-0
+    # Install all runtime libraries needed by the daemon
+    - apt-get install -y -qq libasan6 libubsan1 
+      libgl1-mesa-glx libgtk-3-0 libglfw3 libglew2.2
+      libglib2.0-0 libcairo2 libpango-1.0-0
+      xvfb  # Virtual display for headless GUI
+    # Start virtual display
+    - export DISPLAY=:99
+    - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    - sleep 3  # Give xvfb time to start
   script:
+    - export DISPLAY=:99  # Ensure display is set
     - echo "🧪 Running Daemon Integration Tests..."
     - echo "WARNING - 4 tests expected to fail due to connection reuse limitation"
     - cd tests/tdd
