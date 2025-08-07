@@ -7,7 +7,8 @@ Goxel-daemon is a high-performance Unix socket JSON-RPC server for the Goxel vox
 **🎯 Current Status: STABLE**
 - ✅ **Connection Reuse**: Full JSON-RPC persistent connections
 - ✅ **25 JSON-RPC Methods**: Complete API coverage
-- ✅ **Integration Tests**: 12/12 passing (100% success rate)
+- ✅ **Script Execution**: Full QuickJS integration with error handling
+- ✅ **Integration Tests**: 17/17 passing (100% success rate)
 - ✅ **OSMesa Rendering**: Complete offscreen rendering pipeline
 - ✅ **File Operations**: .gox, .obj, .png, and more formats
 - ✅ **Production Ready**: Memory safe, thread-safe, high performance
@@ -129,6 +130,22 @@ Complete programmatic control of voxel operations:
 ```python
 # Render scene to PNG
 {"jsonrpc": "2.0", "method": "goxel.render_scene", "params": ["output.png", 800, 600], "id": 6}
+```
+
+### Script Execution
+```python
+# Execute JavaScript code
+{"jsonrpc": "2.0", "method": "goxel.execute_script", "params": {"script": "2 + 2"}, "id": 10}
+
+# Execute script with error handling
+{"jsonrpc": "2.0", "method": "goxel.execute_script", "params": {"script": "throw new Error('test')"}, "id": 11}
+# Returns: {"success": false, "code": -1, "message": "Script execution failed with code -1"}
+
+# Execute script from file
+{"jsonrpc": "2.0", "method": "goxel.execute_script", "params": {"path": "/path/to/script.js"}, "id": 12}
+
+# Execute with custom timeout
+{"jsonrpc": "2.0", "method": "goxel.execute_script", "params": {"script": "/* long running */", "timeout_ms": 5000}, "id": 13}
 ```
 
 ### Connection Patterns
