@@ -90,7 +90,7 @@ Features
 - Ray tracing
 
 **v14.0 Enterprise Daemon Features (PRODUCTION RELEASED):**
-- **📦 Homebrew Packaging**: Easy installation with `brew install jimmy/goxel/goxel`
+- **📦 Homebrew Packaging**: Easy installation with `brew install jimmy/goxel/goxel-daemon`
 - **⚡ JSON-RPC 2.0 Protocol**: Complete API with 15 core methods for full voxel editing
 - **🚀 High-Performance Architecture**: Worker pool with **683% improvement** (7.83x faster than v13)
 - **🌐 Universal Client Support**: Python, JavaScript, Go, curl, and any JSON-RPC capable language
@@ -118,10 +118,10 @@ Usage
 ```bash
 # Install Goxel v14.0 daemon
 brew tap jimmy/goxel file:///path/to/goxel/homebrew-goxel
-brew install jimmy/goxel/goxel
+brew install jimmy/goxel/goxel-daemon
 
 # Start as service (production mode)
-brew services start goxel
+brew services start goxel-daemon
 
 # Test installation
 python3 /opt/homebrew/share/goxel/examples/homebrew_test_client.py
@@ -186,8 +186,8 @@ The building system uses scons. The code is in C99, using some GNU extensions.
 ```bash
 # Homebrew (macOS/Linux) - EASIEST METHOD
 brew tap jimmy/goxel file:///path/to/goxel/homebrew-goxel
-brew install jimmy/goxel/goxel
-brew services start goxel
+brew install jimmy/goxel/goxel-daemon
+brew services start goxel-daemon
 
 # Verify installation
 goxel-daemon --version

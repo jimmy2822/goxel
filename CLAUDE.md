@@ -1,4 +1,4 @@
-# CLAUDE.md - Goxel Daemon v15.2
+# CLAUDE.md - Goxel Daemon v0.15.3
 
 ## 📋 Project Overview
 
@@ -298,11 +298,14 @@ ps aux | grep goxel-daemon                      # Check if running
 
 ## 📝 Version Information
 
-**Version**: 15.2  
-**Release Date**: August 4, 2025  
+**Version**: 0.15.3  
+**Release Date**: August 8, 2025  
 **Status**: Stable Production Release
 
-### Recent Improvements (v15.2)
+### Recent Improvements (v0.15.3)
+- **🔧 Script Execution**: Resolved script execution issues for full JavaScript automation support
+
+### Previous Updates (v0.15.2)
 - **🎉 Connection Reuse**: Full persistent connection support
 - **⚡ Performance**: 10-100x improvement for batch operations
 - **🔧 Compatibility**: Maintains backward compatibility
@@ -326,5 +329,5 @@ ps aux | grep goxel-daemon                      # Check if running
 
 ---
 
-**🚀 Goxel Daemon v15.2 - High-Performance Voxel Automation**  
+**🚀 Goxel Daemon v0.15.3 - High-Performance Voxel Automation**  
 *Empowering developers to build amazing voxel applications*
