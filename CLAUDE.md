@@ -329,5 +329,5 @@ ps aux | grep goxel-daemon                      # Check if running
 
 ---
 
-**🚀 Goxel Daemon v0.15.3 - High-Performance Voxel Automation**  
+**🚀 Goxel Daemon v0.15.3 - High-Performance Voxel Automation**
 *Empowering developers to build amazing voxel applications*
