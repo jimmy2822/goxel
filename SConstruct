@@ -167,8 +167,8 @@ gui_dependent_files = [
     'utils/sound.c', 'utils/texture.c', 'utils/vec.c',
     # Main entry points - exclude based on build mode
     'main_gui.c', 'main_unified.c',
-    'theme.c', 'render.c', 'gizmos.c', 'gesture.c', 'gesture3d.c',
-    'model3d.c', 'action.c', 'tests.c', 'system.c', 'shader_cache.c',
+    'theme.c', 'gizmos.c', 'gesture.c', 'gesture3d.c',
+    'action.c', 'tests.c', 'system.c',
     'i18n.c',
 ]
 
