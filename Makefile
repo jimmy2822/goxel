@@ -16,14 +16,38 @@ release:
 profile:
 	scons $(JOBS) mode=profile
 
+cli-tools:
+	scons $(JOBS) cli_tools=1
+
+cli-tools-release:
+	scons $(JOBS) mode=release cli_tools=1
+
+daemon:
+	scons $(JOBS) daemon=1
+
+daemon-release:
+	scons $(JOBS) mode=release daemon=1
+
 run:
 	./goxel
+
+run-cli:
+	./goxel-cli
+
+run-daemon:
+	./goxel-daemon
 
 clean: .FORCE
 	scons -c
 
 analyze:
 	scan-build scons mode=analyze
+
+test: .FORCE
+	$(MAKE) -C tests run-tests
+
+test-clean: .FORCE
+	$(MAKE) -C tests clean
 
 # For the moment only apply the format to uncommited changes.
 format: .FORCE

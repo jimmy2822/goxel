@@ -783,7 +783,49 @@ static JSValue attr_getter(JSContext *ctx, JSValueConst this_val, int magic)
 static JSValue attr_setter(JSContext *ctx, JSValueConst this_val,
                            JSValueConst val, int magic)
 {
-    // Not implemented yet.
+    JSValue proto;
+    const klass_t *klass;
+    void *this, *ptr;
+    const attribute_t *attr;
+
+    proto = JS_GetPrototype(ctx, this_val);
+    klass = JS_GetOpaque(proto, 1);
+    if (!klass) {
+        JS_FreeValue(ctx, proto);
+        return JS_EXCEPTION;
+    }
+    
+    this = JS_GetOpaque(this_val, klass->id);
+    JS_FreeValue(ctx, proto);
+    
+    if (!this) {
+        LOG_E("No object instance found for class %s", klass->def.class_name);
+        return JS_EXCEPTION;
+    }
+    
+    attr = &klass->attributes[magic];
+    
+    // Handle object references
+    if (attr->klass && attr->member.size) {
+        ptr = JS_GetOpaque(val, attr->klass->id);
+        if (!ptr && !JS_IsNull(val)) {
+            LOG_E("Invalid value type for attribute %s", attr->name);
+            return JS_EXCEPTION;
+        }
+        *(void**)((char*)this + attr->member.offset) = ptr;
+        return JS_UNDEFINED;
+    }
+
+    // Handle primitive values embedded in the object
+    if (attr->klass && attr->klass->ctor_from_ptr && attr->member.size) {
+        ptr = (char*)this + attr->member.offset;
+        // For now, we can't handle direct value assignment to embedded objects
+        // This would require type-specific conversion logic
+        LOG_E("Direct assignment to embedded attribute %s not supported", attr->name);
+        return JS_EXCEPTION;
+    }
+
+    LOG_E("No attribute setter handler found for %s", attr->name);
     return JS_EXCEPTION;
 }
 
@@ -837,8 +879,11 @@ static void init_runtime(void)
     JSValue obj, global_obj;
 
     if (g_ctx) return;
+    LOG_D("Initializing QuickJS runtime");
     g_rt = JS_NewRuntime();
+    LOG_D("Created JS runtime: %p", g_rt);
     g_ctx = JS_NewContext(g_rt);
+    LOG_D("Created JS context: %p", g_ctx);
     ctx = g_ctx;
     js_init_module_std(ctx, "std");
     js_init_module_os(ctx, "os");
@@ -852,11 +897,13 @@ static void init_runtime(void)
     init_klass(ctx, &goxel_klass);
 
     // Add global 'goxel' object.
+    LOG_D("Creating goxel object, &goxel = %p", &goxel);
     obj = JS_NewObjectClass(ctx, goxel_klass.id);
     JS_SetOpaque(obj, &goxel);
     global_obj = JS_GetGlobalObject(ctx);
     JS_SetPropertyStr(ctx, global_obj, "goxel", obj);
     JS_FreeValue(ctx, global_obj);
+    LOG_D("QuickJS runtime initialization complete");
 }
 
 static int script_run_from_str(
@@ -869,12 +916,19 @@ static int script_run_from_str(
     init_runtime();
     js_std_add_helpers(g_ctx, argc, (char**)argv);
 
-    val = JS_Eval(g_ctx, script, len, filename, JS_EVAL_TYPE_MODULE);
+    val = JS_Eval(g_ctx, script, len, filename, JS_EVAL_TYPE_GLOBAL);
+    LOG_D("JS_Eval returned, checking if exception...");
     if (JS_IsException(val)) {
+        LOG_D("Script execution resulted in exception");
         js_std_dump_error(g_ctx);
         ret = -1;
+    } else if (JS_IsUndefined(val)) {
+        LOG_D("Script execution returned undefined");
+    } else {
+        LOG_D("Script execution returned a value");
     }
     JS_FreeValue(g_ctx, val);
+    LOG_D("script_run_from_str returning %d", ret);
     return ret;
 }
 
@@ -891,6 +945,16 @@ int script_run_from_file(const char *filename, int argc, const char **argv)
 
     ret = script_run_from_str(script, size, filename, argc, argv);
     free(script);
+    return ret;
+}
+
+int script_run_from_string(const char *script_code, const char *source_name)
+{
+    if (!script_code) return -1;
+    const char *name = source_name ? source_name : "<inline>";
+    LOG_D("script_run_from_string called with code='%s', name='%s'", script_code, name);
+    int ret = script_run_from_str(script_code, strlen(script_code), name, 0, NULL);
+    LOG_D("script_run_from_string returning %d", ret);
     return ret;
 }
 
