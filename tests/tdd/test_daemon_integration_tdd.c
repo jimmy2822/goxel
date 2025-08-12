@@ -263,7 +263,14 @@ int test_malformed_json_handling() {
     cleanup_socket();
     
     pid_t daemon_pid = start_daemon();
-    usleep(100000);
+    usleep(500000); // Give daemon more time to start
+    
+    // Wait for socket to be created
+    int wait_count = 0;
+    while (!socket_exists() && wait_count < 10) {
+        usleep(100000);
+        wait_count++;
+    }
     
     int sock = connect_to_daemon();
     TEST_ASSERT(sock >= 0, "Should connect to daemon");
