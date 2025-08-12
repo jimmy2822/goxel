@@ -291,11 +291,17 @@ if target_os == 'posix':
             print("Found OSMesa via pkg-config")
         else:
             # Check if OSMesa library exists in standard locations
+            # Try both capitalizations as different systems use different names
             if conf.CheckLib('OSMesa'):
                 env.Append(LIBS=['OSMesa'])
                 env.Append(CPPDEFINES=['OSMESA_RENDERING', 'HAVE_OSMESA'])
                 osmesa_found = True
                 print("Found OSMesa library")
+            elif conf.CheckLib('osmesa'):
+                env.Append(LIBS=['osmesa'])
+                env.Append(CPPDEFINES=['OSMESA_RENDERING', 'HAVE_OSMESA'])
+                osmesa_found = True
+                print("Found osmesa library (lowercase)")
         
         if not osmesa_found:
             print("WARNING: OSMesa not found - daemon rendering will use software fallback")
