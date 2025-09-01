@@ -771,11 +771,31 @@ This enables multi-angle rendering:
 
 ## 📝 Version Information
 
-**Version**: 0.17.4  
-**Release Date**: August 18, 2025  
-**Status**: Fully Production Ready - MCP Connection Reuse Enhanced
+**Version**: 0.17.5  
+**Release Date**: September 1, 2025  
+**Status**: Fully Production Ready - Complete Rendering Pipeline Fixed
 
-### 🎉 Latest Updates (v0.17.4) - MCP CONNECTION REUSE & THREAD SAFETY
+### 🎉 Latest Updates (v0.17.5) - COMPLETE RENDERING PIPELINE FIX
+- **🔧 OpenGL Context Threading Fix**: Resolved critical shader creation failures
+  - **Problem Solved**: `glCreateShader()` returning 0 due to missing OpenGL context in rendering thread
+  - **Solution**: Added `OSMesaMakeCurrent()` calls before all `render_submit()` operations in `src/daemon_render/render_daemon.c`
+  - **Impact**: Eliminates "Assertion failed: (vertex_shader)" errors, enables successful shader compilation
+- **✅ Shader Pipeline Verified**: Confirmed color pass-through working correctly
+  - **Previously Fixed**: Removed erroneous `sqrt()` operation that was darkening colors
+  - **Current State**: Direct color pass-through in MATERIAL_UNLIT path for accurate color reproduction
+- **✅ OSMesa Framebuffer Confirmed**: RGBA format correctly configured
+  - **Configuration**: Using OSMESA_RGBA (0x1908) with proper byte ordering
+  - **Diagnostic Tools**: Added comprehensive color format detection and diagnostic logging
+- **🔧 Camera Distance Calculation**: Improved framing for rendered models
+  - **Old Formula**: `dist = max(width, height, depth) * 8` (too far)
+  - **New Formula**: Proper trigonometric calculation based on 20° FOV
+  - **Result**: Models now properly centered and sized in rendered images
+- **✅ Snoopy Model Success**: Successfully rendered 37,080 voxel Snoopy with correct colors
+  - **White Body**: Renders as pure white (255,255,255)
+  - **Black Ears/Nose**: Renders as pure black (0,0,0)
+  - **Multiple Angles**: All camera presets (front, isometric, left, right) working
+
+### Previous Updates (v0.17.4) - MCP CONNECTION REUSE & THREAD SAFETY
 - **🔧 MCP Connection Reuse Fix**: Fixed critical thread-safety issues in MCP server integration
   - **Problem Solved**: MCP handler used shared global context causing contamination between concurrent requests
   - **Solution**: Added thread-safe context management with dedicated contexts per MCP request
