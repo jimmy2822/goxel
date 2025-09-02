@@ -1,10 +1,10 @@
-# CLAUDE.md - Goxel Daemon v0.17.4
+# CLAUDE.md - Goxel Daemon v0.18.5
 
 ## 📋 Project Overview
 
 Goxel-daemon is a high-performance Unix socket JSON-RPC server for the Goxel voxel editor, enabling programmatic control and automation of 3D voxel operations. Built with C99 for maximum performance and reliability.
 
-**🎯 Current Status: FULLY PRODUCTION READY - ALL SYSTEMS OPERATIONAL (v0.17.4)**
+**🎯 Current Status: FULLY PRODUCTION READY - ALL SYSTEMS OPERATIONAL (v0.18.5)**
 - ✅ **Multi-Angle Rendering**: All 7 camera presets (front, back, left, right, top, bottom, isometric) working perfectly!
 - ✅ **OSMesa Rendering**: Full offscreen rendering with 100% color accuracy
 - ✅ **Color Pipeline**: Perfect voxel color reproduction - white renders as white!
@@ -18,7 +18,7 @@ Goxel-daemon is a high-performance Unix socket JSON-RPC server for the Goxel vox
 - ✅ **Voxel Operations**: Complete 3D modeling functionality with accurate color rendering
 - ✅ **Production Ready**: Memory safe, thread-safe, high performance, scalable
 - ✅ **60,888 Voxel Models**: Successfully tested with massive Snoopy model creation
-- ✅ **MCP Integration Status**: All MCP operations now support persistent connections with thread-safe context management and connection reuse (v0.17.4)
+- ✅ **MCP Integration Status**: All MCP operations now support persistent connections with thread-safe context management and connection reuse (v0.18.5)
 
 **🌐 Official Website**: https://goxel.xyz
 
@@ -771,11 +771,11 @@ This enables multi-angle rendering:
 
 ## 📝 Version Information
 
-**Version**: 0.17.5  
+**Version**: 0.18.5  
 **Release Date**: September 1, 2025  
 **Status**: Fully Production Ready - Complete Rendering Pipeline Fixed
 
-### 🎉 Latest Updates (v0.17.5) - COMPLETE RENDERING PIPELINE FIX
+### 🎉 Latest Updates (v0.18.5) - COMPLETE RENDERING PIPELINE FIX
 - **🔧 OpenGL Context Threading Fix**: Resolved critical shader creation failures
   - **Problem Solved**: `glCreateShader()` returning 0 due to missing OpenGL context in rendering thread
   - **Solution**: Added `OSMesaMakeCurrent()` calls before all `render_submit()` operations in `src/daemon_render/render_daemon.c`
