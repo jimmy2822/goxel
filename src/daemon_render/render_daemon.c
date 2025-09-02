@@ -361,7 +361,7 @@ int daemon_render_to_file(const char *filename, const char *format)
         // COLOR CHANNEL ORDER DIAGNOSTIC
         // Look for red pixels (255, 0, 0) and see which byte order they appear as
         bool found_red_test = false;
-        int red_positions[4] = {-1, -1, -1, -1}; // Where we find 255 values
+        // Removed unused red_positions array to fix compilation warning
         
         for (int i = 0; i < total_pixels && !found_red_test; i++) {
             uint8_t b0 = buf[i * 4 + 0];
@@ -374,10 +374,7 @@ int daemon_render_to_file(const char *filename, const char *format)
                 (b1 > 200 && b0 < 50 && b2 < 50) ||
                 (b2 > 200 && b0 < 50 && b1 < 50)) {
                 found_red_test = true;
-                red_positions[0] = b0;
-                red_positions[1] = b1; 
-                red_positions[2] = b2;
-                red_positions[3] = b3;
+                // Direct values (b0, b1, b2, b3) are used in logging below
                 
                 LOG_I("FOUND RED-ISH PIXEL [%d,%d,%d,%d] at pixel index %d", b0, b1, b2, b3, i);
                 
